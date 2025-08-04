@@ -65,16 +65,4 @@ Make sure your IAM user has permissions like:
   ]
 }
 ```
-
-## 📁 Folder Structure (if using scripts)
-
-```
-.
-├── README.md
-├── upload.py         # Optional Python script for progress-enabled upload
-└── requirements.txt  # tqdm, boto3 (for SDK use)
-```
-
-## 📜 License
-
 This project is open source and available under the [MIT License](LICENSE).
