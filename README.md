@@ -17,6 +17,16 @@ This project provides an easy way to upload large files (including files >160 GB
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 sudo installer -pkg AWSCLIV2.pkg -target /
 ```
+#### Linux
+```bash
+sudo apt update
+sudo apt install unzip -y
+cd /tmp
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+```
 
 #### Windows
 Download and install from:  
