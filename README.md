@@ -75,4 +75,5 @@ Make sure your IAM user has permissions like:
   ]
 }
 ```
-This project is open source and available under the [MIT License](LICENSE).
+### 4. SSH
+ssh -i path/to/your-key.pem ubuntu@ec2-51-16-25-85.il-central-1.compute.amazonaws.com
