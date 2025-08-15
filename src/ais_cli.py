@@ -25,6 +25,58 @@ def ais_cli():
 
 
 @ais_cli.command()
+@click.option('--bucket', '-b', required=True, help='S3 bucket name')
+@click.option('--region', '-r', help='AWS region')
+@click.option('--access-key', help='AWS access key ID')
+@click.option('--secret-key', help='AWS secret access key')
+def test(bucket, region, access_key, secret_key):
+    """Test S3 connection and bucket access."""
+    try:
+        from aws import S3Client
+        
+        # Clean bucket name (remove s3:// prefix if present)
+        clean_bucket = bucket.replace('s3://', '')
+        
+        console.print("🔍 Testing S3 connection...", style="blue")
+        
+        # Initialize S3 client
+        s3_client = S3Client(
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=region
+        )
+        
+        # Test basic connection
+        if s3_client.test_connection():
+            console.print("✅ S3 connection successful!", style="green")
+        else:
+            console.print("❌ S3 connection failed!", style="red")
+            return
+        
+        # Test bucket access
+        console.print(f"🔍 Checking bucket '{clean_bucket}'...", style="blue")
+        if s3_client.bucket_exists(clean_bucket):
+            console.print(f"✅ Bucket '{clean_bucket}' exists and is accessible!", style="green")
+            
+            # Get bucket region
+            try:
+                bucket_region = s3_client.get_bucket_location(clean_bucket)
+                console.print(f"📍 Bucket region: {bucket_region}", style="cyan")
+            except Exception as e:
+                console.print(f"⚠️  Could not determine bucket region: {e}", style="yellow")
+        else:
+            console.print(f"❌ Bucket '{clean_bucket}' does not exist or is not accessible!", style="red")
+            return
+        
+        console.print("🎉 All tests passed! S3 is ready for uploads.", style="green")
+        
+    except Exception as e:
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
+
+
+@ais_cli.command()
 @click.option('--base-path', '-p', required=True, 
               help='Base directory path (e.g., "E:\\AISDData\\exactEarth")')
 @click.option('--bucket', '-b', required=True, help='S3 bucket name')

@@ -76,7 +76,15 @@ class S3Client:
     def test_connection(self) -> bool:
         """Test S3 connection by listing buckets."""
         try:
-            self.client.list_buckets()
+            # For global operations like list_buckets, we need to use us-east-1
+            # Create a temporary client for global operations
+            global_session = boto3.Session(
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
+                region_name='us-east-1'
+            )
+            global_client = global_session.client('s3')
+            global_client.list_buckets()
             return True
         except ClientError as e:
             print(f"Failed to connect to S3: {e}")
@@ -85,12 +93,26 @@ class S3Client:
     def bucket_exists(self, bucket_name: str) -> bool:
         """Check if a bucket exists."""
         try:
+            # Use the region-specific client for bucket operations
             self.client.head_bucket(Bucket=bucket_name)
             return True
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == '404':
                 return False
+            # If it's a region error (400 Bad Request), try with us-east-1 (global endpoint)
+            elif error_code == '400':
+                try:
+                    global_session = boto3.Session(
+                        aws_access_key_id=self.aws_access_key_id,
+                        aws_secret_access_key=self.aws_secret_access_key,
+                        region_name='us-east-1'
+                    )
+                    global_client = global_session.client('s3')
+                    global_client.head_bucket(Bucket=bucket_name)
+                    return True
+                except ClientError:
+                    return False
             raise e
     
     def get_bucket_location(self, bucket_name: str) -> str:
