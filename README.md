@@ -72,10 +72,12 @@ run.bat ais-status
 python main.py scan --base-path "/path/to/ais/data"
 
 # Upload files to S3
-python main.py upload --base-path "/path/to/ais/data" --bucket your-bucket
+# Upload your test data
+# Upload all remaining files
+python main.py upload --base-path "/tmp/upload_files_to_s3/test_data" --bucket ais-research-data-archive --region il-central-1
 
 # Check status
-python main.py status --base-path "/path/to/ais/data" --bucket your-bucket
+python main.py status --base-path "/path/to/ais/data" --ais-research-data-archive
 ```
 
 ### 💡 Virtual Environment Tips
@@ -294,13 +296,7 @@ create_test.bat test_data --file-size 5 --months 1,2,3,4,5,6
 #### macOS
 ```bash
 # Create test data to try the tool
-python create_test_data.py test_data
-
-# Create more test files
-python create_test_data.py test_data --files-per-month 5 --years 2022,2023
-
-# Create larger test files
-python create_test_data.py test_data --file-size 5 --months 1,2,3,4,5,6
+python create_test_data.py test_data --years 2022,2023 --months 1,2,3,4,5,6 --file-size 50
 ```
 
 ## 🛠️ Troubleshooting
