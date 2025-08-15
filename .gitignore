@@ -191,3 +191,8 @@ downloads/
 .idea/vcs.xml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/inspectionProfiles/Project_Default.xml
+ais_checksums.json
+ais_files.json
+ais_upload_progress.json
+test_data/2022/01/ais_data_20250815_162458_5752.rar
+test_data/2022/01/ais_data_20250815_162458_5587.rar

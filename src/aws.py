@@ -60,13 +60,25 @@ class S3Client:
                 region_name=self.region_name
             )
             
-            self.client = session.client(
-                's3',
-                endpoint_url=self.endpoint_url,
-                config=botocore.config.Config(
-                    retries=dict(max_attempts=self.config.max_retries)
+            # For newer AWS regions like il-central-1, don't override the endpoint
+            # Let boto3 handle the endpoint selection automatically
+            if self.region_name in ['il-central-1', 'me-central-1', 'ap-southeast-4']:
+                # Don't specify endpoint_url for newer regions
+                self.client = session.client(
+                    's3',
+                    config=botocore.config.Config(
+                        retries=dict(max_attempts=self.config.max_retries)
+                    )
                 )
-            )
+            else:
+                # Use custom endpoint for older regions
+                self.client = session.client(
+                    's3',
+                    endpoint_url=self.endpoint_url,
+                    config=botocore.config.Config(
+                        retries=dict(max_attempts=self.config.max_retries)
+                    )
+                )
             
         except NoCredentialsError:
             raise Exception("AWS credentials not found. Please configure your credentials.")
