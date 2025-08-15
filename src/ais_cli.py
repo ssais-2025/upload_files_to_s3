@@ -11,8 +11,8 @@ from rich.panel import Panel
 from rich.text import Text
 import json
 
-from .ais_uploader import AISUploader
-from .uploader import AISFileScanner
+from ais_uploader import AISUploader
+from uploader import AISFileScanner
 
 console = Console()
 

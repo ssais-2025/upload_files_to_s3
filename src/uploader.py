@@ -17,7 +17,7 @@ from pathlib import Path
 from datetime import datetime
 import logging
 
-from .aws import S3Client, config
+from aws import S3Client, config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -195,6 +195,49 @@ class AISFileScanner:
         except Exception as e:
             logger.error(f"Failed to load checksums: {e}")
             return {}
+    
+    def run_scan_phase(self) -> Tuple[Dict, List[Dict]]:
+        """
+        Run the complete scan phase and prepare upload queue.
+        
+        Returns:
+            Tuple of (files_by_period, upload_queue)
+        """
+        logger.info("=== PHASE 1: File Scanning ===")
+        
+        # Check if we already have a file list
+        existing_files = self.load_file_list()
+        existing_checksums = self.load_checksums()
+        
+        if existing_files and existing_checksums:
+            logger.info("Using existing file list and checksums")
+            # Convert to flat upload queue
+            upload_queue = []
+            for year, year_data in existing_files.items():
+                for month, files in year_data.items():
+                    upload_queue.extend(files)
+            
+            return existing_files, upload_queue
+        
+        # Perform fresh scan
+        logger.info("Performing fresh directory scan...")
+        files_by_period = self.scan_directory()
+        
+        # Calculate checksums
+        checksums = self.calculate_checksums(files_by_period)
+        
+        # Save results
+        self.save_file_list(files_by_period)
+        self.save_checksums(checksums)
+        
+        # Convert to flat upload queue
+        upload_queue = []
+        for year, year_data in files_by_period.items():
+            for month, files in year_data.items():
+                upload_queue.extend(files)
+        
+        logger.info(f"Scan phase completed: {len(upload_queue)} files found")
+        return files_by_period, upload_queue
 
 
 class S3Uploader:

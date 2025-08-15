@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Callable
 from tqdm import tqdm
 
-from .aws import S3Client
-from .uploader import S3Uploader, AISFileScanner
+from aws import S3Client
+from uploader import S3Uploader, AISFileScanner
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

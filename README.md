@@ -12,26 +12,34 @@ A simple Python tool to upload AIS data files to Amazon S3 with automatic direct
 
 #### Windows
 ```cmd
-git clone https://github.com/yourusername/upload_files_to_s3.git
+git clone https://github.com/ssais-2025/upload_files_to_s3.git
 cd upload_files_to_s3
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+venv\Scripts\activate
 
 # Install the tool
 run.bat install
 
-# Install with development tools (optional)
-run.bat install-dev
 ```
 
 #### macOS
 ```bash
-git clone https://github.com/yourusername/upload_files_to_s3.git
+git clone https://github.com/ssais-2025/upload_files_to_s3.git
 cd upload_files_to_s3
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
 
 # Install the tool
 pip install -e .
 
-# Install with development tools (optional)
-pip install -e ".[dev]"
 ```
 
 ### 3. Configure AWS
@@ -69,6 +77,26 @@ python main.py upload --base-path "/path/to/ais/data" --bucket your-bucket
 # Check status
 python main.py status --base-path "/path/to/ais/data" --bucket your-bucket
 ```
+
+### 💡 Virtual Environment Tips
+
+**Always activate your virtual environment before using the tool:**
+```bash
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+
+# Deactivate when done
+deactivate
+```
+
+**Why use virtual environments?**
+- ✅ Isolates project dependencies
+- ✅ Prevents conflicts with system Python
+- ✅ Easy to clean up and recreate
+- ✅ Professional Python development practice
 
 ## 🖥️ Commands by Platform
 
