@@ -7,7 +7,11 @@ import boto3
 import botocore
 from botocore.exceptions import ClientError, NoCredentialsError
 from typing import Optional, Dict, Any, List
-from pydantic import BaseSettings, Field
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings
+from pydantic import Field
 
 
 class S3Config(BaseSettings):
