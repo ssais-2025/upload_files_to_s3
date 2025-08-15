@@ -36,10 +36,13 @@ def ais_cli():
 def upload(base_path, bucket, region, access_key, secret_key, max_files, resume):
     """Upload AIS data files to S3."""
     try:
+        # Clean bucket name (remove s3:// prefix if present)
+        clean_bucket = bucket.replace('s3://', '')
+        
         # Initialize AIS uploader
         uploader = AISUploader(
             base_path=base_path,
-            bucket_name=bucket,
+            bucket_name=clean_bucket,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
             region_name=region
@@ -51,8 +54,8 @@ def upload(base_path, bucket, region, access_key, secret_key, max_files, resume)
             return
         
         # Check if bucket exists
-        if not uploader.s3_client.bucket_exists(bucket):
-            console.print(f"❌ Bucket '{bucket}' does not exist!", style="red")
+        if not uploader.s3_client.bucket_exists(clean_bucket):
+            console.print(f"❌ Bucket '{clean_bucket}' does not exist!", style="red")
             return
         
         if resume:
@@ -66,7 +69,9 @@ def upload(base_path, bucket, region, access_key, secret_key, max_files, resume)
         display_upload_results(results)
         
     except Exception as e:
-        console.print(f"❌ Error: {e}", style="red")
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
 
 
 @ais_cli.command()
@@ -91,7 +96,9 @@ def scan(base_path, output):
         console.print(f"✅ Scan completed. File list saved to: {output}", style="green")
         
     except Exception as e:
-        console.print(f"❌ Error: {e}", style="red")
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
 
 
 @ais_cli.command()
@@ -104,10 +111,13 @@ def scan(base_path, output):
 def status(base_path, bucket, region, access_key, secret_key):
     """Show upload status and statistics."""
     try:
+        # Clean bucket name (remove s3:// prefix if present)
+        clean_bucket = bucket.replace('s3://', '')
+        
         # Initialize AIS uploader
         uploader = AISUploader(
             base_path=base_path,
-            bucket_name=bucket,
+            bucket_name=clean_bucket,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
             region_name=region
@@ -120,7 +130,9 @@ def status(base_path, bucket, region, access_key, secret_key):
         display_status(status_info)
         
     except Exception as e:
-        console.print(f"❌ Error: {e}", style="red")
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
 
 
 @ais_cli.command()
@@ -135,10 +147,13 @@ def validate(base_path, bucket, region, access_key, secret_key):
     try:
         console.print("🔍 Validating uploaded files...", style="blue")
         
+        # Clean bucket name (remove s3:// prefix if present)
+        clean_bucket = bucket.replace('s3://', '')
+        
         # Initialize AIS uploader
         uploader = AISUploader(
             base_path=base_path,
-            bucket_name=bucket,
+            bucket_name=clean_bucket,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
             region_name=region
@@ -151,7 +166,9 @@ def validate(base_path, bucket, region, access_key, secret_key):
         display_validation_results(validation_results)
         
     except Exception as e:
-        console.print(f"❌ Error: {e}", style="red")
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
 
 
 @ais_cli.command()
@@ -167,11 +184,14 @@ def info(base_path, bucket, region, access_key, secret_key):
         console.print("📊 AIS Data Information", style="blue")
         console.print("=" * 50)
         
+        # Clean bucket name (remove s3:// prefix if present)
+        clean_bucket = bucket.replace('s3://', '')
+        
         # Initialize components
         scanner = AISFileScanner(base_path)
         uploader = AISUploader(
             base_path=base_path,
-            bucket_name=bucket,
+            bucket_name=clean_bucket,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
             region_name=region
@@ -182,10 +202,12 @@ def info(base_path, bucket, region, access_key, secret_key):
         status_info = uploader.get_upload_status()
         
         # Display comprehensive information
-        display_comprehensive_info(files_data, upload_queue, status_info, bucket)
+        display_comprehensive_info(files_data, upload_queue, status_info, clean_bucket)
         
     except Exception as e:
-        console.print(f"❌ Error: {e}", style="red")
+        # Escape any special characters that might cause Rich markup errors
+        error_msg = str(e).replace('[', '\\[').replace(']', '\\]').replace(':', '\\:')
+        console.print(f"❌ Error: {error_msg}", style="red")
 
 
 def display_upload_results(results):
