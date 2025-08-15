@@ -24,9 +24,10 @@ class S3Config(BaseSettings):
     s3_bucket_name: Optional[str] = Field(None, env="S3_BUCKET_NAME")
     s3_endpoint_url: str = Field("https://s3.amazonaws.com", env="S3_ENDPOINT_URL")
     
-    max_concurrent_parts: int = Field(10, env="MAX_CONCURRENT_PARTS")
-    part_size_mb: int = Field(100, env="PART_SIZE_MB")
-    max_retries: int = Field(3, env="MAX_RETRIES")
+    max_concurrent_parts: int = Field(20, env="MAX_CONCURRENT_PARTS")  # Increased from 10
+    part_size_mb: int = Field(200, env="PART_SIZE_MB")  # Increased from 100
+    max_retries: int = Field(5, env="MAX_RETRIES")  # Increased from 3
+    max_concurrent_files: int = Field(5, env="MAX_CONCURRENT_FILES")  # New: concurrent file uploads
     
     class Config:
         env_file = ".env"

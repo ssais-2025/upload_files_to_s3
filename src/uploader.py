@@ -271,11 +271,52 @@ class S3Uploader:
         file_size = os.path.getsize(file_path)
         object_key = object_key or os.path.basename(file_path)
         
-        # Use multipart upload for files larger than 100MB
-        if file_size > 100 * 1024 * 1024:  # 100MB
+        # Use multipart upload for files larger than 200MB (updated threshold)
+        if file_size > 200 * 1024 * 1024:  # 200MB
             return self._multipart_upload(file_path, bucket_name, object_key, file_size, progress_callback)
         else:
             return self._simple_upload(file_path, bucket_name, object_key, progress_callback)
+    
+    def upload_files_batch(self, 
+                          files: List[Dict], 
+                          bucket_name: str,
+                          max_concurrent: int = 5) -> Dict[str, int]:
+        """
+        Upload multiple files concurrently for better performance.
+        
+        Args:
+            files: List of file dictionaries with 'path' and 'key' keys
+            bucket_name: S3 bucket name
+            max_concurrent: Maximum number of concurrent uploads
+            
+        Returns:
+            Dict with upload statistics
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        results = {'total': len(files), 'success': 0, 'failed': 0}
+        
+        with ThreadPoolExecutor(max_workers=max_concurrent) as executor:
+            # Submit all upload tasks
+            future_to_file = {
+                executor.submit(self.upload_file, file['path'], bucket_name, file['key']): file
+                for file in files
+            }
+            
+            # Process completed uploads
+            for future in as_completed(future_to_file):
+                file = future_to_file[future]
+                try:
+                    success = future.result()
+                    if success:
+                        results['success'] += 1
+                    else:
+                        results['failed'] += 1
+                except Exception as e:
+                    print(f"Upload failed for {file['path']}: {e}")
+                    results['failed'] += 1
+        
+        return results
     
     def _simple_upload(self, file_path: str, bucket_name: str, object_key: str, 
                        progress_callback: Optional[Callable]) -> bool:
