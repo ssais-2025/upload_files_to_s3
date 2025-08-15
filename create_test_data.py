@@ -37,14 +37,45 @@ def create_dummy_rar_file(file_path, size_mb=1):
         # Create some dummy files to compress
         dummy_file = os.path.join(temp_dir, "dummy.txt")
         
-        # Generate random content to reach desired size
-        content = "AIS Data Test File\n" * (size_mb * 1024 * 1024 // 25)  # Approximate size
+        # Calculate how many bytes we need for the target size
+        target_bytes = size_mb * 1024 * 1024
+        
+        # Since we're using ZIP_STORED (no compression), we need exactly the target size
+        # Each line is about 80 bytes, so calculate lines needed
+        line_size = 80
+        lines_needed = target_bytes // line_size
+        
+        # Create varied content to reach the target size
+        content_lines = []
+        for i in range(lines_needed):
+            # Create varied content
+            line = f"AIS Data Test File #{i:06d} - Sample data for testing. "
+            line += f"Timestamp: {datetime.now().isoformat()} - Random: {random.randint(100000, 999999)}\n"
+            content_lines.append(line)
+        
+        content = "".join(content_lines)
+        
+        # Trim to exact target size
+        if len(content) > target_bytes:
+            content = content[:target_bytes]
+        elif len(content) < target_bytes:
+            # Pad with additional content if too short
+            padding = "A" * (target_bytes - len(content))
+            content += padding
+        
         with open(dummy_file, 'w') as f:
             f.write(content)
         
-        # Create a ZIP file but name it .rar (for testing purposes)
-        with zipfile.ZipFile(file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        # Create a ZIP file with no compression to maintain size
+        with zipfile.ZipFile(file_path, 'w', zipfile.ZIP_STORED) as zipf:
             zipf.write(dummy_file, os.path.basename(dummy_file))
+        
+        # Verify the final file size is close to target
+        final_size = file_path.stat().st_size
+        size_diff = abs(final_size - target_bytes) / target_bytes
+        
+        if size_diff > 0.1:  # If more than 10% difference
+            print(f"    Warning: Target size was {size_mb}MB, actual size is {final_size / (1024*1024):.1f}MB")
 
 
 def create_test_hierarchy(base_path, years, months, files_per_month, file_size_mb=1):
