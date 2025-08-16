@@ -41,7 +41,8 @@ run.bat install
     pip install -e .
     
     ```
- </details>
+</details>
+
 ### 3. Configure AWS
 ```bash
 # Install AWS CLI
@@ -65,18 +66,19 @@ run.bat ais-upload
 # Check status
 run.bat ais-status
 ```
-
-#### macOS
+<details>
+ <summary>macOS</summary>
 ```bash
-# Create test_data
-python create_test_data.py test_data --years 2022,2023 --months 1,2,3,4,5,6 --file-size 50
-
-# Scan your AIS data directory
-python main.py scan --base-path "/path/to/ais/data"
-
-# Upload files to S3
-python main.py upload --base-path "/tmp/upload_files_to_s3/test_data" --bucket ais-research-data-archive --region il-central-1
-
-# Check status
-python main.py status --base-path "/path/to/ais/data" --ais-research-data-archive
-```
+ # Create test_data
+ python create_test_data.py test_data --years 2022,2023 --months 1,2,3,4,5,6 --file-size 50
+ 
+ # Scan your AIS data directory
+ python main.py scan --base-path "/path/to/ais/data"
+ 
+ # Upload files to S3
+ python main.py upload --base-path "/tmp/upload_files_to_s3/test_data" --bucket ais-research-data-archive --region il-central-1
+ 
+ # Check status
+ python main.py status --base-path "/path/to/ais/data" --ais-research-data-archive
+ ```
+</details>
