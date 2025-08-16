@@ -47,11 +47,17 @@ echo Note: For advanced commands like lint, format, clean, use PowerShell: .\run
 goto end
 
 :install
+echo Installing dependencies first...
+pip install -r requirements.txt
+echo.
 echo Installing package in development mode...
 pip install -e .
 goto end
 
 :install-dev
+echo Installing dependencies first...
+pip install -r requirements.txt
+echo.
 echo Installing package with development dependencies...
 pip install -e ".[dev]"
 goto end
