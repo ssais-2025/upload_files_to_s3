@@ -68,12 +68,13 @@ run.bat ais-status
 
 #### macOS
 ```bash
+# Create test_data
+python create_test_data.py test_data --years 2022,2023 --months 1,2,3,4,5,6 --file-size 50
+
 # Scan your AIS data directory
 python main.py scan --base-path "/path/to/ais/data"
 
 # Upload files to S3
-# Upload your test data
-# Upload all remaining files
 python main.py upload --base-path "/tmp/upload_files_to_s3/test_data" --bucket ais-research-data-archive --region il-central-1
 
 # Check status
