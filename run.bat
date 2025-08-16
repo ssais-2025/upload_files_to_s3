@@ -3,6 +3,18 @@ REM S3 Uploader - Windows Batch Script
 REM This script provides basic functionality for Windows Command Prompt users.
 REM Run with: run.bat <command>
 
+REM Activate virtual environment if it exists
+if exist "venv\Scripts\activate.bat" (
+    echo Activating virtual environment...
+    call venv\Scripts\activate.bat
+) else (
+    echo Warning: Virtual environment not found at venv\Scripts\activate.bat
+    echo Please create and activate virtual environment manually:
+    echo   python -m venv venv
+    echo   venv\Scripts\activate
+    echo.
+)
+
 if "%1"=="" goto help
 if "%1"=="help" goto help
 if "%1"=="install" goto install
@@ -56,34 +68,80 @@ goto end
 
 :ais-scan
 echo Scanning AIS data directory...
-echo Note: Adjust the base path in this script for your system
-python main.py scan --base-path "E:\AISDData\exactEarth" --output ais_files.json
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Scanning: %choice%
+python main.py scan --base-path "%choice%" --output ais_files.json
 goto end
 
 :ais-upload
 echo Uploading AIS data files...
-echo Note: Adjust the base path and bucket name in this script for your system
-python main.py upload --base-path "E:\AISDData\exactEarth" --bucket your-bucket-name
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Uploading from: %choice%
+python main.py upload --base-path "%choice%" --bucket ais-research-data-archive --region il-central-1
 goto end
 
 :ais-status
 echo Showing AIS upload status...
-python main.py status --base-path "E:\AISDData\exactEarth" --bucket your-bucket-name
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Checking status for: %choice%
+python main.py status --base-path "%choice%" --bucket ais-research-data-archive --region il-central-1
 goto end
 
 :ais-validate
 echo Validating uploaded AIS files...
-python main.py validate --base-path "E:\AISDData\exactEarth" --bucket your-bucket-name
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Validating: %choice%
+python main.py validate --base-path "%choice%" --bucket ais-research-data-archive --region il-central-1
 goto end
 
 :ais-info
 echo Showing comprehensive AIS information...
-python main.py info --base-path "E:\AISDData\exactEarth" --bucket your-bucket-name
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Getting info for: %choice%
+python main.py info --base-path "%choice%" --bucket ais-research-data-archive --region il-central-1
 goto end
 
 :ais-resume
 echo Resuming AIS upload from previous session...
-python main.py upload --base-path "E:\AISDData\exactEarth" --bucket your-bucket-name --resume
+echo.
+echo Available options:
+echo   1. Test data (for testing): test_data
+echo   2. Production data: E:\AISDData\exactEarth
+echo.
+set /p choice="Enter directory path or press Enter for test_data: "
+if "%choice%"=="" set choice=test_data
+echo Resuming upload from: %choice%
+python main.py upload --base-path "%choice%" --bucket ais-research-data-archive --region il-central-1 --resume
 goto end
 
 :unknown
